@@ -9,6 +9,7 @@ router.use(function (req, res, next) {
   next()
 })
 
+
 router.all("/router/all", function(req, res, next){
     res.write("<h1>From all</h1>")
     next();

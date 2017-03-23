@@ -37,12 +37,25 @@ app.use(routing);
 
 var ejs_ = require("./ejs");
 app.use(ejs_);
- 
+
+
+//must takes four arguments
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+}) 
+
 app.use(function (req, res, next) {
   console.log('Time Start:', Date.now())
   next()
   console.log('Time End:', Date.now())
 })
+
+//serve the files from public folder
+app.use(express.static("public"));
+
+//serve the files through /static url from public/static folder
+app.use("/static", express.static("/public/static"));
 
 
 app.get("/", function(req, res){
