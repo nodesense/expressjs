@@ -1,0 +1,30 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>EJS</title>
+</head>
+<body>
+    <h2>EJS</h2>
+
+    <p><%= title %></p>
+
+    <ul>
+    <% products.forEach(function(product) { %>
+        <li><%= product.name %> - <%= product.year %></li>
+    <% }); %>
+    </ul>
+
+    <% if (true) { %>
+        <h2>True</h2>
+         
+    <% } %>
+
+    <%= true ? "<h2>Test</h2>" : "Fails" %>
+
+    <h2>  <%= true ? "Test" : "Fails" %> </h2>
+
+    <% include header.html %>
+</body>
+</html>
