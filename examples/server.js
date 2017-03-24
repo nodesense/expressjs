@@ -54,13 +54,23 @@ app.use(function (req, res, next) {
 //serve the files from public folder
 app.use(express.static("public"));
 
-//serve the files through /static url from public/static folder
-app.use("/static", express.static("/public/static"));
+//serve the files through /static url from current dir/public folder
+app.use('/static', express.static(path.join(__dirname, 'public')))
 
 
 app.get("/", function(req, res){
     res.send("hello");
 })
+
+//all variables
+console.log(process.argv);
+
+// print process.argv
+process.argv.forEach(function (val, index, array) {
+  console.log(index + ': ' + val);
+});
+
+
 
 app.listen(3000, function(status){
     console.log(status);
