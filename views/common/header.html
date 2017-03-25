@@ -1,0 +1,16 @@
+<nav>
+    <a href="/">Home</a>
+    <a href="/products"> Products </a>
+
+    <a href="/products/create"> New Product </a>
+
+    <% if (!user) { %> 
+    <a href="/login"> login </a>
+    <% } %>
+
+    <% if (user) { %> 
+    <a href="/logout"> logout </a>
+    <% } %>
+     
+
+</nav>

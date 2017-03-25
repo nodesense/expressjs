@@ -1,0 +1,45 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+     <link rel="stylesheet" href="/assets/picnic.css">
+
+<link rel="stylesheet" href="/assets/styles.css">
+
+
+    <title>Product Edit</title>
+</head>
+<body>
+
+     <% include ../common/header.html %>
+
+
+    <form method="post" action="/products/save">
+        <% if (product.id) {  %>
+
+        <input type="hidden" name="id" 
+                     value="<%= product.id %>" />  
+
+        <% } %>   
+
+        <input type="hidden" name="_csrf"
+                value="<%= csrfToken %>" />
+
+        <p> Name <input name="name" 
+                        value="<%= product.name %>"
+                 />
+
+        <p> Year <input name="year" 
+                        value="<%= product.year %>"
+                 />
+
+        <button type="submit">Save</button>
+    </form>
+
+
+    <% include ../common/footer.html %>
+    
+</body>
+</html>

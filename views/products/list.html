@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+     <link rel="stylesheet" href="/assets/picnic.css">
+<link rel="stylesheet" href="/assets/styles.css">
+
+
+    <title>Products</title>
+</head>
+<body>
+    <% include ../common/header.html %>
+
+    <table>
+        <tr>    
+            <th>Name</th>
+            <th>Year</th>
+            <th>Edit</th>
+
+            <th>Delete</th>
+        </tr>
+
+        <% products.forEach(function(product) { %>
+            <tr>
+                <td>
+                    <a href="/products/view/<%= product.id %>">
+                    <%= product.name %>
+                    </a>
+                    </td>
+
+                <td><%= product.year %></td>
+
+                <td>
+                 <a href="/products/edit/<%= product.id %>">
+                    Edit
+                    </a>
+                    
+                    </td>
+
+                <td>
+                 <a href="/products/delete/<%= product.id %>">
+                    Delete
+                    </a>
+                    
+                    </td>
+                
+            </tr>
+        <% }) %>
+    </table>
+
+    <% include ../common/footer.html %>
+    
+</body>
+</html>
