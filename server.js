@@ -43,7 +43,16 @@ app.use(bodyParser.json());
 
 app.use(cookieParser('fDgfaRT243FDFrAS')); 
 
-app.use(session({secret: 'fadsyg234lkjifasfds', saveUninitialized: true, resave: true,  secure: true}));
+const MongoStore = require('connect-mongo')(session);
+
+
+app.use(session({
+    secret: 'fadsyg234lkjifasfds', saveUninitialized: true, 
+    resave: true,  
+    secure: true,
+
+    store: new MongoStore({ url: 'mongodb://localhost/sessions' })
+}));
 
 
 
@@ -111,10 +120,13 @@ app.use(function(req, res, next){
 var home = require("./controllers/home");
 var products = require("./controllers/products");
 var auth = require("./controllers/auth");
+var cart = require("./controllers/cart");
 
 app.use(home);
 app.use(products);
 app.use(auth);
+app.use(cart);
+
 
 
 app.get("/hello", function(req, res){

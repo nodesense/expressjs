@@ -20,6 +20,9 @@
             <th>Edit</th>
 
             <th>Delete</th>
+
+
+            <th>+Cart</th>
         </tr>
 
         <% products.forEach(function(product) { %>
@@ -42,6 +45,13 @@
                 <td>
                  <a href="/products/delete/<%= product.id %>">
                     Delete
+                    </a>
+                    
+                    </td>
+
+                  <td>
+                 <a href="/cart/add/<%= product.id %>/<%= product.name %>">
+                    +Cart
                     </a>
                     
                     </td>
