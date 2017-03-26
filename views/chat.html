@@ -1,0 +1,53 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+     <link rel="stylesheet" href="/assets/picnic.css">
+<link rel="stylesheet" href="/assets/styles.css">
+    <script src="/node_modules/jquery/dist/jquery.js">
+    </script>
+
+    <script src="/node_modules/socket.io-client/dist/socket.io.js">
+    </script>
+
+    <script >
+       // var name = window.prompt("Your name?");
+        //alert(name);
+        //window.localStorage.setItem("name", name);
+    </script>
+
+
+    <script src="/assets/chat.js">
+    </script>
+
+
+
+
+    <title>Chat</title>
+</head>
+<body>  
+    <h1> <%= pageTitle %></h1>
+
+    <% include common/header.html %>
+ 
+   <div class="container" id="main">
+      
+      <div id="chatEntries"></div>
+      <div class="row" id="entries">
+        <input type="text" id="messageInput">
+
+        <button class="btn" id="submit" data-loading-text="Send">Send</button>
+        
+      </div>
+      <div id="nbUsersDiv">
+        <p>There is <span id="nbUsers"></span> connected user(s).</p>
+      </div>
+    </div>
+  </body>
+   
+
+    <% include common/footer.html %>
+</body>
+</html>

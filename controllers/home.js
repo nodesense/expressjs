@@ -14,4 +14,13 @@ router.get("/", function(req, res){
     });
 })
 
+router.get("/chat", function(req, res){
+    res.locals.pageTitle = "Chat";
+    
+    res.render("chat", {
+        title: "Chat"
+    });
+})
+
+
 module.exports = router;

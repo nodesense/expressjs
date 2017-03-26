@@ -14,6 +14,8 @@ var bodyParser = require("body-parser");
 var passport = require('passport');
 var passportLocal =  require('passport-local');
 
+var http = require('http');
+
 
 var app = express();
 
@@ -31,6 +33,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use("/assets", express.static(__dirname + "/assets"));
 
+app.use("/node_modules", express.static(__dirname + "/node_modules"));
+
+
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json());
@@ -40,6 +45,10 @@ app.use(cookieParser('fDgfaRT243FDFrAS'));
 
 app.use(session({secret: 'fadsyg234lkjifasfds', saveUninitialized: true, resave: true,  secure: true}));
 
+
+
+var products_api = require("./api/products");
+app.use("/api",products_api);
 
 app.use(csrf({cookie:true}));
 
@@ -106,7 +115,7 @@ var auth = require("./controllers/auth");
 app.use(home);
 app.use(products);
 app.use(auth);
- 
+
 
 app.get("/hello", function(req, res){
     res.set("Content-Type", "text/html");
@@ -177,7 +186,11 @@ app.get ("/products/view/:id", function(req, res){
 */
 
 
-app.listen(8080, "0.0.0.0", function(err){
+var server = http.createServer(app)
+var io = require('socket.io').listen(server);
+
+
+server.listen(8080, "0.0.0.0", function(err){
     console.log("callback");
 
     if (err)
@@ -185,3 +198,58 @@ app.listen(8080, "0.0.0.0", function(err){
 });
 
 console.log("server started with nodemon");
+
+var pseudoArray = ['admin']; 
+
+var users = 0; //count the users
+
+io.sockets.on('connection', function (socket) { // First connection
+	users += 1; // Add 1 to the count
+	reloadUsers(); // Send the count to all the users
+	socket.on('message', function (data) { // Broadcast the message to all
+		if(pseudoSet(socket))
+		{
+			var transmit = {date : new Date().toISOString(), pseudo : socket.nickname, message : data};
+			socket.broadcast.emit('message', transmit);
+			console.log("user "+ transmit['pseudo'] +" said \""+data+"\"");
+		}
+	});
+	socket.on('setPseudo', function (data) { // Assign a name to the user
+		if (pseudoArray.indexOf(data) == -1) // Test if the name is already taken
+		{
+			pseudoArray.push(data);
+			socket.nickname = data;
+			socket.emit('pseudoStatus', 'ok');
+			console.log("user " + data + " connected");
+		}
+		else
+		{
+			socket.emit('pseudoStatus', 'error') // Send the error
+		}
+	});
+	socket.on('disconnect', function () { // Disconnection of the client
+		users -= 1;
+		reloadUsers();
+		if (pseudoSet(socket))
+		{
+			console.log("disconnect...");
+			var pseudo;
+			pseudo = socket.nickname;
+			var index = pseudoArray.indexOf(pseudo);
+			pseudo.slice(index - 1, 1);
+		}
+	});
+});
+
+function reloadUsers() { // Send the count of the users to all
+	io.sockets.emit('nbUsers', {"nb": users});
+}
+function pseudoSet(socket) { // Test if the user has a name
+	var test;
+	if (socket.nickname == null ) test = false;
+	else test = true;
+	return test;
+}
+
+
+module.exports = app;
