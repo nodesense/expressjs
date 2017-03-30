@@ -1,30 +1,45 @@
 var express = require("express");
 var ejs = require("ejs");
 var path = require("path");
-
 var csrf = require('csurf'); 
-
 var   session = require('express-session');
 var cookieParser = require("cookie-parser");
-
-
 var bodyParser = require("body-parser");
 
+var cors = require("cors");
 
-var passport = require('passport');
-var passportLocal =  require('passport-local');
 
-var http = require('http');
+var mongoose = require("mongoose");
+require("./models/product");
+require("./models/user");
+
+var products = require("./controllers/products");
+var auth = require("./controllers/auth");
+var cart = require("./controllers/cart");
 
 
 var app = express();
 
-var mongoose = require("mongoose");
+var production = {
+    "mongo": 'mongodb://localhost/productsdb'
+}
 
-mongoose.connect('mongodb://localhost/productsdb');
+var development = {
+    "mongo": 'mongodb://localhost/productsdb'
+}
 
-require("./models/product");
-require("./models/user");
+var test = {
+    "mongo": 'mongodb://localhost/testdb'
+}
+
+var config = development;
+
+if (process.env.NODE_ENV === "test"){
+    config = test;
+}
+
+mongoose.connect(config.mongo);
+
 
 app.set('view engine', 'html');
 app.engine('html', ejs.renderFile);
@@ -35,10 +50,16 @@ app.use("/assets", express.static(__dirname + "/assets"));
 
 app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
+app.disable('etag') ;
 
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json());
+
+
+
+app.use(cors())
+
 
 
 app.use(cookieParser('fDgfaRT243FDFrAS')); 
@@ -61,52 +82,11 @@ app.use("/api",products_api);
 
 app.use(csrf({cookie:true}));
 
-
-app.use(passport.initialize());
-app.use(passport.session());
+var initializePassport = require("./passport-auth")
+initializePassport(app);
  
  var User = mongoose.model("User");
 
-var Strategy = require('passport-local').Strategy;
-
-passport.use(new Strategy(
-  function(username, password, cb) {
-        console.log(username, password);
-
-        User.findOne({username: username}, 
-           function(err, user){
-               //if user not present
-            if (err) {
-                cb(err, false);
-                return;
-            }
-
-            if (user.password != password) {
-                cb("password not matched", false);
-                return;
-            }
-
-            console.log("valid user");
-            cb(null, user);
-
-        })
-
-  })
-)
-
-passport.serializeUser(function(user, cb) {
-    console.log("serializeUser")
-  cb(null, user.username);
-});
-
-passport.deserializeUser(function(username, cb) {
- console.log("deserializeUser")
-
-  User.findOne({'username':username}, function (err, user) {
-    if (err) { return cb(err); }
-    cb(null, user);
-  });
-});
 
 
 app.use(function(req, res, next){
@@ -198,70 +178,55 @@ app.get ("/products/view/:id", function(req, res){
 */
 
 
+
+var http=require("http");
 var server = http.createServer(app)
 var io = require('socket.io').listen(server);
 
 
-server.listen(8080, "0.0.0.0", function(err){
+if (process.env.NODE_ENV !== "test"){
+    server.listen(8080, "0.0.0.0", function(err){
+    console.log("callback");
+
+    if (err)
+        console.log("error listen ", err);
+    });
+}
+
+
+console.log("server started with nodemon");
+var users_online = {};
+
+
+io.sockets.on('connection', function (socket) { // First connection
+	
+    console.log("Client connected");
+
+    socket.on("user-id", function(data){
+        console.log(data);
+        users_online[data] = socket;
+        socket.id = data;
+    })
+
+	socket.on('message', function (data) { // Broadcast the message to all
+        console.log("message ", data);
+		socket.broadcast.emit('message', data);
+	}); 
+	socket.on('disconnect', function () { // Disconnection of the client
+
+        console.log("disconnected");
+		  
+	});
+});
+
+/*
+app.listen(8080, "0.0.0.0", function(err){
     console.log("callback");
 
     if (err)
         console.log("error listen ", err);
 });
-
+*/
 console.log("server started with nodemon");
-
-var pseudoArray = ['admin']; 
-
-var users = 0; //count the users
-
-io.sockets.on('connection', function (socket) { // First connection
-	users += 1; // Add 1 to the count
-	reloadUsers(); // Send the count to all the users
-	socket.on('message', function (data) { // Broadcast the message to all
-		if(pseudoSet(socket))
-		{
-			var transmit = {date : new Date().toISOString(), pseudo : socket.nickname, message : data};
-			socket.broadcast.emit('message', transmit);
-			console.log("user "+ transmit['pseudo'] +" said \""+data+"\"");
-		}
-	});
-	socket.on('setPseudo', function (data) { // Assign a name to the user
-		if (pseudoArray.indexOf(data) == -1) // Test if the name is already taken
-		{
-			pseudoArray.push(data);
-			socket.nickname = data;
-			socket.emit('pseudoStatus', 'ok');
-			console.log("user " + data + " connected");
-		}
-		else
-		{
-			socket.emit('pseudoStatus', 'error') // Send the error
-		}
-	});
-	socket.on('disconnect', function () { // Disconnection of the client
-		users -= 1;
-		reloadUsers();
-		if (pseudoSet(socket))
-		{
-			console.log("disconnect...");
-			var pseudo;
-			pseudo = socket.nickname;
-			var index = pseudoArray.indexOf(pseudo);
-			pseudo.slice(index - 1, 1);
-		}
-	});
-});
-
-function reloadUsers() { // Send the count of the users to all
-	io.sockets.emit('nbUsers', {"nb": users});
-}
-function pseudoSet(socket) { // Test if the user has a name
-	var test;
-	if (socket.nickname == null ) test = false;
-	else test = true;
-	return test;
-}
-
 
 module.exports = app;

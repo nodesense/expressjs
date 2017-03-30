@@ -4,21 +4,46 @@ var mongoose = require('mongoose');
 var Product = mongoose.model("Product");
 
 var router = express.Router();
-  
+
+/*
+router.use(function(req, res, next){
+    console.log("request ", req.headers["origin"]);
+
+    let origin = req.headers["origin"];
+    if (origin && origin.indexOf("9090") >= 0) {
+        res.set("Access-Control-Allow-Origin", req.headers["origin"])
+    }
+
+    next();
+})
+*/
+
+
 router.get("/products", function(req, res){
 
     Product.find(function(err, products){
-         res.json(products);
+        res.json(products);
+ 
     })
     
 })
+
+router.get("/jsonp/products/", function(req, res){
+
+    Product.find(function(err, products){
+        res.jsonp(products);
+ 
+    })
+    
+})
+
 
 router.get("/products/:id", function(req, res){
     let productId = req.params.id;
 
     Product.findById(productId, function(err, product){
         if (err) {
-            res.status(404).render("errors/not-found");
+            res.status(404).json({result: false});
                 return;
         }
 
@@ -27,12 +52,15 @@ router.get("/products/:id", function(req, res){
  
 })
  
-
+//CREATE new resource
+//POST /api/products HTTP/1.1
+//{{HEADERS}}
+//
+//{{data}}
 router.post("/products", function(req, res){
 
      var newProduct = new Product();
- 
-        
+         
     newProduct.name = req.body.name;
     newProduct.year = req.body.year;
 
@@ -62,7 +90,7 @@ router.put("/products/:id", function(req, res){
 
 router.delete("/products/:id", function(req, res){
     Product.remove({_id: req.params.id}, function(err, product){   
-        res.statusCode(200);
+        res.sendStatus(200);
     })
 })
 

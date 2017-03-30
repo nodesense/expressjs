@@ -2,12 +2,9 @@ var express = require("express");
   
 var router = express.Router();
 
-
-//controller
-//GET / HTTP/1.1
-//HEADERS
+ 
 router.get("/cart", function(req, res){
-    res.locals.pageTitle = "Home Page";
+    res.locals.pageTitle = "Cart Page";
     
    res.render("cart/list", {
         title: "Cart",
