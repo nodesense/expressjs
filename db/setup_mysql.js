@@ -105,7 +105,7 @@ CREATE TABLE Stores (
 
 
 const CREATE_BRAND_STORE_TABLE_QUERY = `
-CREATE TABLE BrandStores (
+CREATE TABLE brands_stores (
      id INT NOT NULL AUTO_INCREMENT,
      
      brandId INT,

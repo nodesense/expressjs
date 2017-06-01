@@ -88,10 +88,7 @@ const Product = sequelize.define('products', {
   timestamps: false
 });
 
-
- Brand.create({
-    name: 'new brand'
-  });
+ 
 
 Brand.findAll().then(brands => {
   console.log(brands)
@@ -219,10 +216,43 @@ const Store = sequelize.define('stores', {
   timestamps: false
 });
 
- 
 
- 
- 
+const BrandStores = sequelize.define('brands_stores', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+  },
+  
+  brandId: {
+      type: Sequelize.INTEGER,
+
+        references: {
+            // This is a reference to another model
+            model: Brand,
+
+            // This is the column name of the referenced model
+            key: 'id',
+   }
+  },
+
+
+  storeId: {
+      type: Sequelize.INTEGER,
+
+        references: {
+            // This is a reference to another model
+            model: Store,
+
+            // This is the column name of the referenced model
+            key: 'id',
+   }
+  },
+
+}, {
+  timestamps: false
+});
+
+
 
 
 Product.findAll().then(products => {
@@ -232,7 +262,16 @@ Product.findAll().then(products => {
   })
 })
 
-
+/*
+Store.create({
+    name: 'Store 1', 
+    stateId: 20,
+    cityId: 50,
+    email: 'blr@example.com',
+    phone: '9886991146',
+    featured: true
+})
+*/
 
 Store.findAll().then(products => {
  
