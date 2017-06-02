@@ -1,7 +1,9 @@
 var express = require("express");
 var mongoose = require('mongoose');
 
-var Product = mongoose.model("Product");
+//var Product = mongoose.model("Product");
+
+var models = require("../models/seq");
 
 var router = express.Router();
  
@@ -12,11 +14,19 @@ router.use(function (req, res, next) {
 
 router.get("/products", function(req, res){
 
-    Product.find(function(err, products){
+    /*Product.find(function(err, products){
         res.render("products/list", {
               "products": products
         });
+    })*/
+
+
+    models.Product.findAll().then(products => {
+        res.render("products/list", {
+              "products": products
+        });  
     })
+ 
     
 })
 
