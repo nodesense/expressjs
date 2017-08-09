@@ -53,6 +53,7 @@
     "passport-github": "^1.1.0",
     "passport-jwt": "^2.2.1",
     "passport-local": "^1.0.0",
+    "redis": "^2.8.0",
     "rotating-file-stream": "^1.2.2",
     "sequelize": "^3.30.4",
     "sequelize-cli": "^2.7.0",
