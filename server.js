@@ -11,6 +11,10 @@ var server = http.createServer(app)
 //socket.io application
 require("./app/socket/chat") (server);
 
+// for testing purpose
+module.exports = server
+
+
 if (process.env.NODE_ENV !== "test"){
     server.listen(8080, "0.0.0.0", function(err){
    

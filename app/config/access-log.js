@@ -3,7 +3,8 @@ var morgan = require('morgan')
 var path = require('path')
 var rfs = require('rotating-file-stream')
 
-const LOG_DIR = "/Users/krish/lab/expressjs/log";
+// log location, move this to config file
+const LOG_DIR = "../../log";
 
 //const LOG_DIR = path.join(__dirname, 'log')
 
